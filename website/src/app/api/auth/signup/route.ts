@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
         lastName,
         emails: [{ type: "OFFICE", value: email }],
         phoneNumbers: cleanPhone ? [{ type: "MOBILE", value: cleanPhone, code: "+91" }] : [],
-        description: "New user registration on Meritspe Pre-IPO platform",
+        description: "New user registration on Unlisted Merits Pre-IPO platform",
         customFieldValues: {
           cfKycStatus: "Pending",
         },

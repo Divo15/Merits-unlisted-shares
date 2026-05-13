@@ -129,7 +129,7 @@ export default function Merits() {
             Merits That Matter
           </h2>
           <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-            Why 12,000+ investors trust Meritspe for their pre-IPO investments
+            Why 12,000+ investors trust Unlisted Merits for their pre-IPO investments
           </p>
 
           <div className="inline-flex flex-col sm:flex-row items-center gap-3 sm:gap-4 rounded-2xl px-5 sm:px-8 py-4 sm:py-5 mt-8 border w-full sm:w-auto" style={{ background: "linear-gradient(135deg, rgba(240,144,32,0.08) 0%, rgba(240,144,32,0.04) 100%)", borderColor: "rgba(240,144,32,0.28)" }}>

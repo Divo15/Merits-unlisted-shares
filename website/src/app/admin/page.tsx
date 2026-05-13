@@ -1,9 +1,15 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
-import { Plus, Trash2, Pencil, Check, X, TrendingUp, LogOut, Loader2, RefreshCw } from "lucide-react";
+import { Plus, Trash2, Pencil, Check, X, TrendingUp, LogOut, Loader2, RefreshCw, Upload } from "lucide-react";
 
 const CATEGORIES = ["Pre-IPO", "DRHP Filed", "Listed"];
 const SECTORS = ["Fintech", "Tech", "BFSI", "Infrastructure", "Healthcare", "Consumer", "EV & Auto", "Other"];
+const DJANGO_API = process.env.NEXT_PUBLIC_DJANGO_API || "http://localhost:8000";
+function resolveLogoUrl(url?: string): string {
+  if (!url) return "";
+  if (url.startsWith("/")) return `${DJANGO_API}${url}`;
+  return url;
+}
 const FUND_FIELDS = ["Lot Size", "Depository", "ISIN", "PAN", "CIN", "RTA", "Market Cap", "P/E Ratio", "P/B Ratio", "Debt to Equity", "ROE", "Face Value"];
 
 interface Stock {
@@ -20,6 +26,7 @@ interface Stock {
   low52w: number;
   description?: string;
   fundamentalsUrl?: string;
+  logoUrl?: string;
 }
 
 const EMPTY_FORM = {
@@ -59,6 +66,12 @@ export default function AdminPage() {
 
   // --- Delete ---
   const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  // --- Logo upload ---
+  const [addLogoFile, setAddLogoFile]       = useState<File | null>(null);
+  const [addLogoPreview, setAddLogoPreview] = useState("");
+  const [editLogoFile, setEditLogoFile]     = useState<File | null>(null);
+  const [editLogoPreview, setEditLogoPreview] = useState("");
 
   useEffect(() => {
     if (sessionStorage.getItem("admin_authed") === "1") setAuthed(true);
@@ -105,11 +118,25 @@ export default function AdminPage() {
     }
   }
 
+  async function uploadLogo(file: File, ticker: string): Promise<string> {
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("ticker", ticker);
+    const res = await fetch("/api/admin/logo", { method: "POST", body: fd });
+    if (!res.ok) throw new Error("Logo upload failed");
+    const data = await res.json();
+    return data.logoUrl as string;
+  }
+
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
     setAddLoading(true);
     setAddError("");
     try {
+      let logoUrl = "";
+      if (addLogoFile && addForm.ticker) {
+        logoUrl = await uploadLogo(addLogoFile, addForm.ticker);
+      }
       const res = await fetch("/api/admin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -121,6 +148,7 @@ export default function AdminPage() {
           category: addForm.category,
           description: addForm.description,
           fundamentalsUrl: addForm.fundamentalsUrl,
+          logoUrl,
           price: parseFloat(addForm.price) || 0,
           high52w: parseFloat(addForm.high52w) || parseFloat(addForm.price) || 0,
           low52w: parseFloat(addForm.low52w) || parseFloat(addForm.price) || 0,
@@ -133,6 +161,8 @@ export default function AdminPage() {
       }
       setShowAdd(false);
       setAddForm({ ...EMPTY_FORM });
+      setAddLogoFile(null);
+      setAddLogoPreview("");
       fetchStocks();
     } catch {
       setAddError("Network error.");
@@ -151,11 +181,14 @@ export default function AdminPage() {
       category: stock.category,
       description: stock.description ?? "",
       fundamentalsUrl: stock.fundamentalsUrl ?? "",
+      logoUrl: stock.logoUrl ?? "",
       price: String(stock.price),
       high52w: String(stock.high52w),
       low52w: String(stock.low52w),
     });
     setEditFunds(stock.fundamentalsJson ?? {});
+    setEditLogoFile(null);
+    setEditLogoPreview(resolveLogoUrl(stock.logoUrl));
     setEditError("");
   }
 
@@ -164,6 +197,10 @@ export default function AdminPage() {
     setEditLoading(true);
     setEditError("");
     try {
+      let logoUrl = editForm.logoUrl ?? "";
+      if (editLogoFile && editForm.ticker) {
+        logoUrl = await uploadLogo(editLogoFile, editForm.ticker);
+      }
       const res = await fetch("/api/admin", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -177,6 +214,7 @@ export default function AdminPage() {
           description: editForm.description,
           fundamentalsUrl: editForm.fundamentalsUrl,
           fundamentalsJson: Object.fromEntries(Object.entries(editFunds).filter(([, v]) => v.trim())),
+          logoUrl,
           price: parseFloat(editForm.price) || undefined,
           high52w: parseFloat(editForm.high52w) || undefined,
           low52w: parseFloat(editForm.low52w) || undefined,
@@ -188,6 +226,8 @@ export default function AdminPage() {
         return;
       }
       setEditId(null);
+      setEditLogoFile(null);
+      setEditLogoPreview("");
       fetchStocks();
     } catch {
       setEditError("Network error.");
@@ -219,7 +259,7 @@ export default function AdminPage() {
               <TrendingUp className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-extrabold text-gray-900">
-              Meritspe <span style={{ color: "#F09020" }}>Admin</span>
+              Unlisted Merits <span style={{ color: "#F09020" }}>Admin</span>
             </span>
           </div>
 
@@ -263,7 +303,7 @@ export default function AdminPage() {
             <TrendingUp className="w-4 h-4 text-white" />
           </div>
           <span className="text-lg font-extrabold text-gray-900">
-            Meritspe <span style={{ color: "#F09020" }}>Admin</span>
+            Unlisted Merits <span style={{ color: "#F09020" }}>Admin</span>
           </span>
         </div>
         <button
@@ -371,6 +411,29 @@ export default function AdminPage() {
                   placeholder="https://unlistedzone.com/shares/company-name-unlisted-shares/"
                   className={inputCls} />
               </div>
+              <div className="md:col-span-3">
+                <label className="text-xs font-semibold text-gray-500 mb-1 block">Company Logo</label>
+                <div className="flex items-center gap-3">
+                  {addLogoPreview && (
+                    <img src={addLogoPreview} alt="Preview" className="w-10 h-10 rounded-lg object-contain bg-gray-100 border border-gray-200 p-0.5 shrink-0" />
+                  )}
+                  <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-gray-300 rounded-xl text-sm text-gray-500 cursor-pointer hover:border-blue-400 hover:text-blue-600 transition-colors">
+                    <Upload className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{addLogoFile ? addLogoFile.name : "Upload logo (jpg, png, webp…)"}</span>
+                    <input type="file" accept="image/*" className="hidden" onChange={e => {
+                      const f = e.target.files?.[0] ?? null;
+                      setAddLogoFile(f);
+                      setAddLogoPreview(f ? URL.createObjectURL(f) : "");
+                    }} />
+                  </label>
+                  {addLogoFile && (
+                    <button type="button" onClick={() => { setAddLogoFile(null); setAddLogoPreview(""); }}
+                      className="text-gray-400 hover:text-gray-700 transition-colors shrink-0">
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
               <div className="md:col-span-3 flex gap-3 pt-1">
                 <button type="submit" disabled={addLoading}
                   className="px-5 py-2.5 rounded-xl text-sm font-bold text-white disabled:opacity-60 transition-all hover:-translate-y-0.5"
@@ -475,6 +538,29 @@ export default function AdminPage() {
                                 placeholder="https://unlistedzone.com/shares/…" className={editInputCls} />
                             </div>
                           </div>
+                          <div className="mb-3">
+                            <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide mb-1 block">Company Logo</label>
+                            <div className="flex items-center gap-3">
+                              {editLogoPreview && (
+                                <img src={editLogoPreview} alt="Logo" className="w-10 h-10 rounded-lg object-contain bg-gray-100 border border-gray-200 p-0.5 shrink-0" />
+                              )}
+                              <label className="flex items-center gap-2 px-3 py-1.5 border border-dashed border-gray-300 rounded-lg text-xs text-gray-500 cursor-pointer hover:border-blue-400 hover:text-blue-600 transition-colors">
+                                <Upload className="w-3.5 h-3.5 shrink-0" />
+                                <span className="truncate">{editLogoFile ? editLogoFile.name : "Change logo…"}</span>
+                                <input type="file" accept="image/*" className="hidden" onChange={e => {
+                                  const f = e.target.files?.[0] ?? null;
+                                  setEditLogoFile(f);
+                                  setEditLogoPreview(f ? URL.createObjectURL(f) : resolveLogoUrl(editForm.logoUrl));
+                                }} />
+                              </label>
+                              {editLogoFile && (
+                                <button type="button" onClick={() => { setEditLogoFile(null); setEditLogoPreview(resolveLogoUrl(editForm.logoUrl)); }}
+                                  className="text-gray-400 hover:text-gray-700 transition-colors shrink-0">
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </div>
+                          </div>
                           <div>
                             <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide mb-2 block">Fundamentals — manual entry <span className="font-normal normal-case">(overrides auto-fetch)</span></label>
                             <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
@@ -496,7 +582,17 @@ export default function AdminPage() {
                       </React.Fragment>
                     ) : (
                       <tr key={stock.id} className="border-b border-gray-50 hover:bg-gray-50/60 transition-colors">
-                        <td className="px-4 py-3 font-medium text-gray-900">{stock.name}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            {stock.logoUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={resolveLogoUrl(stock.logoUrl)} alt="" className="w-7 h-7 rounded object-contain bg-gray-100 border border-gray-100 p-0.5 shrink-0" />
+                            ) : (
+                              <div className="w-7 h-7 rounded bg-gray-100 shrink-0" />
+                            )}
+                            <span className="font-medium text-gray-900">{stock.name}</span>
+                          </div>
+                        </td>
                         <td className="px-4 py-3">
                           <span className="font-mono text-xs text-gray-600 bg-gray-100 px-2 py-0.5 rounded">{stock.ticker}</span>
                         </td>

@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
         lastName,
         emails: email ? [{ type: "OFFICE", value: email }] : [],
         phoneNumbers: cleanPhone ? [{ type: "MOBILE", value: cleanPhone, code: "+91" }] : [],
-        description: "KYC submitted on Meritspe Pre-IPO platform",
+        description: "KYC submitted on Unlisted Merits Pre-IPO platform",
         ...(city  && { city }),
         ...(state && { state }),
         customFieldValues: {

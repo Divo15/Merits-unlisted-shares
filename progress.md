@@ -1,30 +1,57 @@
 # Meritspe Pre-IPO Platform — Progress
 
 ## Stack
-- **Frontend:** Next.js (App Router) — `C:\Project_pre-IPO\website`
-- **Backend:** Django REST Framework — `C:\Project_pre-IPO\preipo_backend`
-- **DB:** SQLite (dev)
+- **Frontend:** Next.js (App Router) — `website/`
+- **Backend:** Django REST Framework — `preipo_backend/`
+- **DB:** PostgreSQL 18 (`preipo_db`)
+
+## Environment (New Laptop Setup — 11 May 2026)
+- Python 3.12.10 installed via winget
+- Node.js v26.1.0 + npm 11.13.0 installed via winget
+- PostgreSQL 18.3 installed via winget, running on port 5432
+  - Data dir: `C:\pgdata`
+  - User: `postgres` / Password: `12345678`
+  - DB: `preipo_db` (created and migrated)
+- Django superuser: `meritsdev1@gmail.com` / `admin@1234`
+- All migrations applied (stocks, accounts, portfolio, JWT blacklist, `0008_add_logo_url`)
+- 21 correct stocks seeded via `preipo_backend/seed.py`
+- 19/21 logos matched in DB via `preipo_backend/seed_logos.py`
+
+## Running Locally
+```powershell
+# Frontend (http://localhost:3000)
+cd website && npm run dev
+
+# Backend (http://localhost:8000)
+cd preipo_backend && python manage.py runserver 8000
+```
 
 ---
 
 ## Completed
 
 ### Backend (Django)
-- Stock model with `name`, `full_name`, `ticker`, `sector`, `category`, `description`, `fundamentals_url`, `fundamentals_json`
+- Stock model with `name`, `full_name`, `ticker`, `sector`, `category`, `description`, `fundamentals_url`, `fundamentals_json`, `logo_url`
 - `DailyPrice` model tracking price, change, change_pct, high_52w, low_52w per day
-- `serialize_stock()` returns all fields including `fundamentalsUrl` and `fundamentalsJson`
+- `serialize_stock()` returns all fields including `fundamentalsUrl`, `fundamentalsJson`, `logoUrl`
 - CRUD endpoints: `stock_list`, `stock_detail`, `stock_create`, `stock_update`, `stock_delete`
 - News feed endpoint via yfinance
-- Migrations applied through `0007_add_fundamentals_json`
+- All migrations applied through `0008_add_logo_url` + `accounts/0003_portfolio`
+- **21 correct stocks seeded** (`preipo_backend/seed.py`) ✅
+  - Replaced 7 wrong placeholder stocks with correct ones
+  - Correct 21: NSE, APOLLOGREEN, CSK, NAYARA, OYO, STERLITEPOWER, ONIX, PHARMEASY, SBIFM, NESL, PPFAS, MSEI, NCDEX, STUDDS, ORBIS, POLYMATECH, GFCLEV, INCRED, CIAL, HPX, GOODLUCK
+- Django built-in admin (`/admin`) disabled — only custom Next.js admin used
 
 ### Frontend (Next.js)
 - Stock cards grid with Buy/Sell buttons, sector badges, 52W high/low
 - Filter tabs (All, Pre-IPO, DRHP Filed, sector filters, Top Gainers) — all stocks shown when "All" selected
 - Company modal with About text + Fundamentals section (always shows all 12 fields, "—" for missing)
 - Enquiry modal (Buy/Sell)
-- Admin panel with Add/Edit/Delete stocks, password-gated
-  - Add Stock form includes Fundamentals URL field
-  - Edit row expands to show Description, Fundamentals URL, and manual Fundamentals key-value entry (12 fields)
+- Admin panel (`localhost:3000/admin`, password: `meritspe@admin`) with Add/Edit/Delete stocks
+  - Add Stock form includes Fundamentals URL + Company Logo upload
+  - Edit row expands to show Description, Fundamentals URL, Logo upload, and manual Fundamentals key-value entry (12 fields)
+  - Logo upload forwards to Django `POST /api/stocks/admin/logo/` which saves to `preipo_backend/media/logos/`
+  - Stock table shows logo thumbnail in Name column
   - Manual `fundamentalsJson` stored in DB overrides auto-scrape when set
 
 ### Fundamentals Scraping (`/api/company-info`)
@@ -99,17 +126,25 @@
 
 ### CRM Integration (Kylas) — Outbound Lead Push
 - Enquiry modal (Buy/Sell) → creates Kylas lead via `/api/enquiry`
+  - Custom fields: `cfBuySell` (BUY/SELL), `cfStockName` (stock display name)
+  - Standard fields: firstName, lastName, email, phone, description
 - Sign-up (Step 1) → creates Kylas lead with email, phone, `cfKycStatus: "Pending"` via `/api/auth/signup`
 - KYC (Step 3) → creates Kylas lead with full name (from PAN), `cfPanNumber`, `cfCity`, `cfState`, `cfAccountType`, `cfKycStatus: "Submitted"` via `/api/auth/kyc`
-- Custom fields used: `cfPanNumber`, `cfAccountType`, `cfKycStatus`
-- System fields used for address: `city`, `state` (top-level in payload)
 - All CRM calls are fire-and-forget (non-blocking)
+- **Kylas custom fields defined:**
+  | Label | API Field | Active |
+  |---|---|---|
+  | BUY/SELL | `cfBuySell` | Yes |
+  | PAN NUMBER | `cfPanNumber` | Yes |
+  | KYC STATUS | `cfKycStatus` | Yes |
+  | Account type | `cfAccountType` | Yes |
+  | Stock Name | `cfStockName` | Yes |
+- **Enquiry → Kylas lead flow verified end-to-end ✅**
 
 ### Portfolio Feature
 - `Portfolio` model in `preipo_backend/accounts/models.py`
   - Links `CustomUser` → `Stock` with fields: `quantity`, `purchase_price`, `purchase_date`
   - Ordered by `-purchase_date`
-  - Migration: `accounts/migrations/0003_portfolio.py` — run `python manage.py migrate` before testing
 - `PortfolioSerializer` in `accounts/serializers.py`
   - Computed fields: `current_price` (latest `DailyPrice`), `unrealized_pnl`, `pct_return`
   - 1 DB query per holding (cached on object)
@@ -134,7 +169,7 @@
 ```
 User submits Buy/Sell enquiry on website
         ↓
-Kylas lead created (outbound push — already built)
+Kylas lead created with cfBuySell + cfStockName (outbound push ✅)
         ↓
 CRM agent contacts user, negotiates deal offline
         ↓
@@ -155,15 +190,118 @@ User logs in → /portfolio page shows their holdings  ✅
 
 ---
 
+### Logo System
+- 19 company logos moved to `preipo_backend/media/logos/` (served by Django at `/media/logos/`)
+- `logo_url` field added to `Stock` model (migration `0008_add_logo_url`)
+- All 19 logos linked to stocks in DB via `seed_logos.py` ✅
+- DB `logo_url` values updated from `/logos/` → `/media/logos/` (19 rows)
+- Stock cards display logo image if available, fall back to coloured initials avatar
+- Logo container sized per aspect ratio (square, landscape, wide banner)
+- 2 stocks without logos (PHARMEASY, STUDDS) — show initials avatar
+- Non-technical admin can upload logos via admin panel — no code changes needed
+- **Logo upload now goes through Django** (`POST /api/stocks/admin/logo/`) — Next.js route forwards to Django, no local filesystem writes
+- Frontend prefixes all `/media/` paths with `NEXT_PUBLIC_DJANGO_API` via `resolveLogoUrl()` in `top-picks.tsx`
+- `seed.py` and `seed_logos.py` updated to use `/media/logos/` paths
+- **Vercel-safe** — no logos stored in Next.js public folder; all served from Koyeb (Django)
+
+**Correct 21 stocks with logo status:**
+| Ticker | Company | Logo |
+|---|---|---|
+| NSE | National Stock Exchange | ✅ |
+| APOLLOGREEN | Apollo Green Energy | ✅ |
+| CSK | Chennai Super Kings | ✅ |
+| NAYARA | Nayara Energy | ✅ |
+| OYO | Oravel Stays | ✅ |
+| STERLITEPOWER | Sterlite Power | ✅ |
+| ONIX | Onix Renewable | ✅ |
+| PHARMEASY | API Holdings | ❌ |
+| SBIFM | SBI Funds Management | ✅ |
+| NESL | National E-Repository | ✅ |
+| PPFAS | Parag Parikh Financial | ✅ |
+| MSEI | Metropolitan Stock Exchange | ✅ |
+| NCDEX | National Commodity Exchange | ✅ |
+| STUDDS | Studds Accessories | ❌ |
+| ORBIS | Orbis Financial | ✅ |
+| POLYMATECH | Polymatech Electronics | ✅ |
+| GFCLEV | GFCL EV Products | ✅ |
+| INCRED | InCred Financial Services | ✅ |
+| CIAL | Cochin International Airport | ✅ |
+| HPX | Hindustan Power Exchange | ✅ |
+| GOODLUCK | Goodluck Defence & Aerospace | ✅ |
+
+---
+
+---
+
+## Session — 12 May 2026
+
+### Webhook Flow Tested ✅
+- Tested Kylas deal-close → webhook → portfolio update end-to-end
+- Happy path: POST `/api/webhook/kylas-deal/` with Won deal → portfolio entry created, P&L computed correctly
+- Edge cases verified: non-Won stage skipped (200), missing fields (400), bad PAN (404), bad ticker (404)
+
+### Auth & Session
+- Refresh token lifetime increased from 7 days → **20 days** (`preipo_backend/preipo_backend/settings.py`)
+- Navbar: "Start Investing" button replaced with **"Sign Up / Sign In"** → links to `/login`
+- Navbar: when logged in, "Sign Up / Sign In" is hidden and replaced with a **blue circle avatar showing user initials** (derived from email)
+
+### UI / UX Fixes
+- "View All 180+ →" renamed to **"View more →"** in `top-picks.tsx`
+- **Search bar** moved from main nav row to its own slim row below the nav links (less cramped), width increased to `max-w-xl`
+- **Stocks without logos** (PHARMEASY, STUDDS) sorted to the bottom of the grid across all filter tabs
+- **CSK logo** box padding/dimensions fixed (`w-16 h-10 p-2`) to reduce zoomed-in appearance
+- Footer email updated to **unlisted@merits.in**
+- Phone number updated to **+91 98713 25544** in both navbar contact strip and footer
+- **"Speak to an Advisor"** button now scrolls to `#contact` (footer with phone + email)
+- **"Contact Us"** nav link already pointed to `#contact` — confirmed correct
+
+### Navbar layout
+- Removed `justify-between` from main nav flex row
+- Nav links use `flex-1 justify-center` to center in available space
+- Logo left, nav links centered, CTAs + avatar right
+
+### Logout
+- Avatar (initials circle) is now a clickable button — opens a dropdown
+- Dropdown shows "Signed in as" + user email + **Log out** button
+- Clicking Log out: calls Django `POST /api/auth/logout/` to blacklist the refresh token, then clears localStorage + cookie and resets auth state
+- Dropdown closes on outside click (click-away ref)
+- Mobile: logout card appears at bottom of burger menu (email + Log out button)
+- **Tested end-to-end ✅** — login → logout → blacklisted token rejected with 401
+
+### Risk Disclosure & Disclaimer Page (`/disclaimer`)
+- Created `website/src/app/disclaimer/page.tsx`
+- Content scraped and adapted from unlistedzone.com/disclaimer
+- **18 sections** covering full legal disclosure:
+  - Not a SEBI-Recognised Exchange, Not SEBI-Registered, For Informational Purposes Only
+  - Investment Risks, No Guarantee or Warranty, Past Performance
+  - Your Responsibility, Role of Meritspe, Market Manipulation Warning
+  - External Links & Third-Party Content, Limitation of Liability (capped ₹1,000)
+  - Regulatory Compliance (SEBI/FEMA/AML/KYC), Consult a Professional
+  - Age Restriction (18+), Jurisdiction & Governing Law, Changes to Disclaimer
+  - No Professional Relationship, Acknowledgment
+- Footer "Risk Disclosure" link updated from `href="#"` → `href="/disclaimer"`
+- Page has sticky header with back-to-home link, card-based layout
+
+---
+
 ## Pending
 
-### Other
-- [x] Fix footer links (all `href="#"`)
-- [x] Fix WhatsApp placeholder number (`919999999999`)
-- [ ] Production deployment
-- [ ] Fill in `DJANGO_ADMIN_EMAIL` and `DJANGO_ADMIN_PASS` in `website/.env.local`
-- [x] Test full signup → KYC → Kylas lead flow end-to-end
-  - Step 1 (signup), Step 2 (account type), Step 3 (KYC), login, /me all verified ✅
-- [x] Test enquiry → Kylas lead push end-to-end ✅
-- [ ] Test Kylas deal close → webhook → portfolio update flow end-to-end
-- [ ] Run `python manage.py migrate` to apply Portfolio migration (`0003_portfolio`)
+- [ ] Production deployment (Vercel for Next.js + Railway for Django + PostgreSQL, ~$5/month)
+  - [x] Frontend pushed to GitHub ✅
+  - [x] Production-ready changes made (gunicorn, dj-database-url, whitenoise, Procfile, DATABASE_URL support)
+  - [x] news-banner.tsx hardcoded localhost fixed
+  - [x] .gitignore fixed — media/logos/ now tracked, media/docs/ still ignored
+  - [x] Code pushed to GitHub ✅
+  - [ ] Railway account setup + Django deployed
+  - [ ] PostgreSQL provisioned on Railway + migrations run + seed.py run
+  - [ ] Vercel NEXT_PUBLIC_DJANGO_API updated to Railway URL
+  - [ ] Domain connected (Spaceship → Vercel + Railway)
+- [ ] Buy domain — `unlistedmerits.com` + `unlistedmerits.in` (Namecheap or BigRock)
+- [x] Brand name sweep (footer) — replaced "Meritspe" with "Unlisted Merits" in footer (logo text, social aria-labels, disclaimer text, copyright line)
+- [x] Brand name sweep (remaining) — layout.tsx, disclaimer page, admin page, merits.tsx, community.tsx, signup/kyc API routes all updated to "Unlisted Merits" ✅
+- [ ] Upload logos for PHARMEASY and STUDDS when available
+- [ ] Footer Platform links — "Explore Shares", "Top Gainers", "DRHP Filed", "Pre-IPO Deals" should deep-link to filtered views instead of `href="/"`
+- [ ] Footer dead links — Blog, Careers, Help Center, Terms of Service still `href="#"`
+- [x] WhatsApp community link (`community.tsx`) — updated to real group link `https://chat.whatsapp.com/Gq2IObcgpwGBMWM3OKgyRK`
+- [ ] Forgot password / reset password flow
+- [ ] Price update workflow — prices never change unless manually edited in admin

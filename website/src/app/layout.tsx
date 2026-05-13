@@ -19,7 +19,7 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Meritspe | Buy & Sell Unlisted Shares & Pre-IPO Stocks in India",
+  title: "Unlisted Merits | Buy & Sell Unlisted Shares & Pre-IPO Stocks in India",
   description:
     "India's most trusted platform to invest in unlisted shares and pre-IPO stocks. Buy and sell shares of Groww, OYO, CSK, HDFC Securities and 180+ companies with T+1 settlement.",
   keywords: [
@@ -32,17 +32,17 @@ export const metadata: Metadata = {
     "OYO pre-IPO",
   ],
   openGraph: {
-    title: "Meritspe | Buy & Sell Unlisted Shares & Pre-IPO Stocks in India",
+    title: "Unlisted Merits | Buy & Sell Unlisted Shares & Pre-IPO Stocks in India",
     description:
       "India's most trusted platform to invest in unlisted shares and pre-IPO stocks. T+1 settlement, 180+ companies.",
     url: "https://meritspe.com",
-    siteName: "Meritspe",
+    siteName: "Unlisted Merits",
     images: [
       {
         url: "https://meritspe.com/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Meritspe - Unlisted Shares & Pre-IPO Platform",
+        alt: "Unlisted Merits - Unlisted Shares & Pre-IPO Platform",
       },
     ],
     locale: "en_IN",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Meritspe | Buy & Sell Unlisted Shares & Pre-IPO Stocks",
+    title: "Unlisted Merits | Buy & Sell Unlisted Shares & Pre-IPO Stocks",
     description:
       "India's most trusted platform for unlisted shares and pre-IPO investments.",
     images: ["https://meritspe.com/og-image.png"],
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "FinancialService",
-  name: "Meritspe",
+  name: "Unlisted Merits",
   url: "https://meritspe.com",
   description:
     "India's most trusted platform for unlisted shares and pre-IPO investments",
