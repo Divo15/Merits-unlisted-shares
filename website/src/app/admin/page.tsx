@@ -26,6 +26,7 @@ interface Stock {
   low52w: number;
   description?: string;
   fundamentalsUrl?: string;
+  fundamentalsJson?: Record<string, string>;
   logoUrl?: string;
 }
 
