@@ -7,6 +7,13 @@ import EnquiryModal from "@/components/enquiry-modal";
 import CompanyModal from "@/components/company-modal";
 
 const CARD_DELAY_CYCLE = 4;
+const DJANGO_API = process.env.NEXT_PUBLIC_DJANGO_API || "";
+
+function resolveLogoUrl(url: string): string {
+  if (!url) return "";
+  if (url.startsWith("/")) return `${DJANGO_API}${url}`;
+  return url;
+}
 
 const SECTOR_MAP: Record<string, string[]> = {
   "BFSI":           ["financial services", "banking", "insurance", "bfsi", "finance"],
@@ -55,13 +62,31 @@ function StockCard({
       {/* Header row */}
       <div className="flex items-start justify-between gap-2 mb-4">
         <div className="flex items-center gap-3 min-w-0">
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-[0_2px_8px_rgba(0,0,0,0.15)]"
-            style={{ backgroundColor: stock.color }}
-            aria-hidden="true"
-          >
-            {stock.initials}
-          </div>
+          {stock.logoUrl ? (
+            <div
+              className="w-10 h-10 rounded-xl overflow-hidden shrink-0 shadow-[0_2px_8px_rgba(0,0,0,0.15)] bg-white flex items-center justify-center"
+              aria-hidden="true"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={resolveLogoUrl(stock.logoUrl)}
+                alt={stock.name}
+                className="object-contain w-full h-full"
+                onError={(e) => {
+                  const parent = (e.target as HTMLImageElement).parentElement;
+                  if (parent) parent.style.display = "none";
+                }}
+              />
+            </div>
+          ) : (
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-[0_2px_8px_rgba(0,0,0,0.15)]"
+              style={{ backgroundColor: stock.color }}
+              aria-hidden="true"
+            >
+              {stock.initials}
+            </div>
+          )}
           <div className="min-w-0">
             <div className="font-bold text-foreground text-sm truncate leading-tight">
               {stock.name}
