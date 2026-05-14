@@ -16,23 +16,18 @@ const FUND_ORDER = [
 ];
 
 export default function CompanyModal({ stock, onClose }: Props) {
-  const [about, setAbout]           = useState("");
-  const [fundamentals, setFunds]    = useState<Record<string, string>>({});
-  const [loading, setLoading]       = useState(true);
-  const [enquiry, setEnquiry]       = useState<"BUY" | "SELL" | null>(null);
+  const cachedFunds = stock.fundamentalsJson && Object.keys(stock.fundamentalsJson).length > 0;
+  const hasAllData  = cachedFunds && !!stock.description;
+
+  const [about, setAbout]        = useState(stock.description || "");
+  const [fundamentals, setFunds] = useState<Record<string, string>>(cachedFunds ? stock.fundamentalsJson : {});
+  const [loading, setLoading]    = useState(!hasAllData);
+  const [enquiry, setEnquiry]    = useState<"BUY" | "SELL" | null>(null);
 
   const isPositive = stock.changePct >= 0;
 
   useEffect(() => {
-    const cachedFunds = stock.fundamentalsJson && Object.keys(stock.fundamentalsJson).length > 0;
-
-    // If fundamentals are already stored in DB, use them instantly — no scraping needed
-    if (cachedFunds && stock.description) {
-      setAbout(stock.description);
-      setFunds(stock.fundamentalsJson);
-      setLoading(false);
-      return;
-    }
+    if (hasAllData) return;
 
     setLoading(true);
     const params = new URLSearchParams({ name: stock.fullName });
@@ -48,7 +43,8 @@ export default function CompanyModal({ stock, onClose }: Props) {
         if (cachedFunds) setFunds(stock.fundamentalsJson);
       })
       .finally(() => setLoading(false));
-  }, [stock.fullName, stock.description, stock.fundamentalsUrl, stock.fundamentalsJson]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stock.id]);
 
   const hasFundamentals = Object.keys(fundamentals).length > 0;
 
