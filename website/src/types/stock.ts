@@ -15,4 +15,5 @@ export interface Stock {
   description: string;
   fundamentalsUrl: string;
   fundamentalsJson: Record<string, string>;
+  logoUrl: string;
 }
