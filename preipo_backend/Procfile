@@ -1,1 +1,1 @@
-web: gunicorn preipo_backend.wsgi --log-file -
+web: python manage.py collectstatic --noinput && gunicorn preipo_backend.wsgi --log-file -
