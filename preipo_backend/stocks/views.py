@@ -39,6 +39,7 @@ def serialize_stock(stock):
         'description': stock.description or '',
         'fundamentalsUrl': stock.fundamentals_url or '',
         'fundamentalsJson': stock.fundamentals_json or {},
+        'logoUrl': stock.logo_url or '',
     }
 
 
