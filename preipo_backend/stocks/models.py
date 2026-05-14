@@ -10,6 +10,7 @@ class Stock(models.Model):
     description = models.TextField(blank=True, default='')
     fundamentals_url = models.URLField(blank=True, default='')
     fundamentals_json = models.JSONField(default=dict, blank=True)
+    logo_url = models.CharField(max_length=500, blank=True, default='')
 
     def __str__(self):
         return self.ticker
