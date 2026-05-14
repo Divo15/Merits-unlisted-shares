@@ -44,165 +44,150 @@ export default function Home() {
     }
   }, []);
 
-  if (loading) {
-    const sk =
-      "relative overflow-hidden bg-slate-200/60 before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.8s_ease-in-out_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/70 before:to-transparent";
-    const sb = (px: number) => ({ width: `${px}px` });
-    return (
-      <div className="min-h-screen bg-background">
-        <style>{`
-          @keyframes shimmer { 100% { transform: translateX(100%); } }
-          @keyframes float-in { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
-          .sk-stagger > * { animation: float-in 0.5s ease-out backwards; }
-          .sk-stagger > *:nth-child(1) { animation-delay: 0.00s; }
-          .sk-stagger > *:nth-child(2) { animation-delay: 0.06s; }
-          .sk-stagger > *:nth-child(3) { animation-delay: 0.12s; }
-          .sk-stagger > *:nth-child(4) { animation-delay: 0.18s; }
-          .sk-stagger > *:nth-child(5) { animation-delay: 0.24s; }
-          .sk-stagger > *:nth-child(6) { animation-delay: 0.30s; }
-          .sk-stagger > *:nth-child(7) { animation-delay: 0.36s; }
-          .sk-stagger > *:nth-child(8) { animation-delay: 0.42s; }
-        `}</style>
-
-        {/* Brand top bar */}
-        <div className="h-9 w-full flex items-center justify-end px-6 gap-4" style={{ background: "linear-gradient(90deg,#F09020,#E87A00)" }}>
-          <div className="h-3 w-32 rounded bg-white/30" />
-          <div className="h-3 w-24 rounded bg-white/30" />
-        </div>
-
-        {/* Navbar */}
-        <div className="h-16 border-b border-border bg-card flex items-center px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2.5">
-              <div className={`h-9 w-9 rounded-lg ${sk}`} />
-              <div className={`h-6 rounded-md ${sk}`} style={sb(112)} />
-            </div>
-            <div className="hidden md:flex gap-7 items-center">
-              {[56, 64, 48, 72, 56].map((w, i) => (
-                <div key={i} className={`h-3.5 rounded ${sk}`} style={sb(w)} />
-              ))}
-            </div>
-            <div className="flex items-center gap-2">
-              <div className={`h-9 w-9 rounded-full ${sk}`} />
-              <div className={`h-9 rounded-lg ${sk}`} style={sb(96)} />
-            </div>
-          </div>
-        </div>
-
-        {/* Hero */}
-        <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(240,144,32,0.08),transparent_50%),radial-gradient(circle_at_80%_60%,rgba(21,101,192,0.06),transparent_50%)] pointer-events-none" />
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
-            <div className="max-w-3xl sk-stagger">
-              <div className={`h-7 rounded-full mb-6 ${sk}`} style={{ ...sb(160), backgroundColor: "rgba(240,144,32,0.18)" }} />
-              <div className="space-y-3 mb-6">
-                <div className={`h-11 sm:h-14 w-full rounded-lg ${sk}`} />
-                <div className={`h-11 sm:h-14 w-11/12 rounded-lg ${sk}`} />
-                <div className={`h-11 sm:h-14 w-3/5 rounded-lg ${sk}`} />
-              </div>
-              <div className="space-y-2.5 mb-7">
-                <div className={`h-4 w-4/5 rounded ${sk}`} />
-                <div className={`h-4 w-3/5 rounded ${sk}`} />
-              </div>
-              <div className="flex flex-wrap gap-3 mb-5">
-                <div className={`h-12 rounded-xl ${sk}`} style={{ ...sb(176), backgroundColor: "rgba(240,144,32,0.25)" }} />
-                <div className={`h-12 rounded-xl border border-slate-200 ${sk}`} style={sb(176)} />
-              </div>
-              <div className="flex flex-wrap gap-2 mb-8">
-                {[120, 140, 128].map((w, i) => (
-                  <div key={i} className={`h-7 rounded-full ${sk}`} style={sb(w)} />
-                ))}
-              </div>
-              <div className="grid grid-cols-3 gap-6 max-w-2xl border-t border-slate-200/70 pt-6">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="space-y-2">
-                    <div className={`h-8 rounded ${sk}`} style={sb(88)} />
-                    <div className={`h-3 rounded ${sk}`} style={sb(112)} />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Search & filter bar */}
-        <div className="border-y border-border bg-card/95 backdrop-blur">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3">
-            <div className={`h-11 w-full max-w-2xl rounded-xl border border-slate-200 ${sk}`} />
-            <div className="flex gap-2 overflow-hidden">
-              {[64, 80, 56, 96, 72, 88, 76, 84].map((w, i) => (
-                <div key={i} className={`h-9 rounded-full shrink-0 ${sk}`} style={sb(w)} />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Top picks */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
-          <div className="flex items-end justify-between mb-10">
-            <div className="space-y-2">
-              <div className={`h-8 rounded-lg ${sk}`} style={sb(320)} />
-              <div className={`h-4 rounded ${sk}`} style={sb(256)} />
-            </div>
-            <div className={`hidden sm:block h-5 rounded ${sk}`} style={sb(112)} />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sk-stagger">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div
-                key={i}
-                className="rounded-2xl p-4 sm:p-5 border border-border bg-card shadow-[0_1px_3px_rgba(13,32,64,0.04)]"
-              >
-                <div className="flex items-start justify-between gap-2 mb-4">
-                  <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <div className={`w-11 h-11 rounded-xl shrink-0 ${sk}`} />
-                    <div className="min-w-0 flex-1 space-y-2">
-                      <div className={`h-4 w-3/4 rounded ${sk}`} />
-                      <div className={`h-3 w-1/2 rounded ${sk}`} />
-                    </div>
-                  </div>
-                  <div className={`h-5 rounded-full ${sk}`} style={sb(56)} />
-                </div>
-                <div className="mb-4 space-y-2">
-                  <div className={`h-8 rounded-md ${sk}`} style={sb(128)} />
-                  <div className={`h-6 rounded-full ${sk}`} style={{ ...sb(112), backgroundColor: "rgba(16,185,129,0.12)" }} />
-                </div>
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  {[0, 1].map((j) => (
-                    <div key={j} className="bg-slate-50/70 border border-slate-100 rounded-xl p-2.5 space-y-1.5">
-                      <div className={`h-2.5 mx-auto rounded ${sk}`} style={sb(48)} />
-                      <div className={`h-4 mx-auto rounded ${sk}`} style={sb(64)} />
-                    </div>
-                  ))}
-                </div>
-                <div className={`h-6 rounded-full mb-3 ${sk}`} style={sb(88)} />
-                <div className="grid grid-cols-2 gap-2">
-                  <div className={`h-11 rounded-xl ${sk}`} style={{ backgroundColor: "rgba(16,185,129,0.14)" }} />
-                  <div className={`h-11 rounded-xl ${sk}`} style={{ backgroundColor: "rgba(239,68,68,0.14)" }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const sk =
+    "relative overflow-hidden bg-slate-200/60 before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.8s_ease-in-out_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/70 before:to-transparent";
+  const sb = (px: number) => ({ width: `${px}px` });
 
   return (
     <>
+      <style>{`@keyframes shimmer { 100% { transform: translateX(100%); } }`}</style>
       <Navbar query={query} onSearch={handleNavSearch} stocks={stocks} />
       <main>
-        {selectedStock && <Hero stock={selectedStock} />}
-        <SearchFilter onFilter={handleFilter} />
-        <TopPicks
-          allStocks={stocks}
-          onSelectStock={setSelectedStock}
-          selectedStockId={selectedStock?.id ?? ""}
-          query={query}
-          filterTab={filterTab}
-        />
-        <Merits />
-        <AboutUs />
-        <Community />
+        {loading ? (
+          <>
+            {/* Hero skeleton — matches real Hero layout (pt-10/16/24, max-w-7xl, 2-col grid on lg) */}
+            <section className="relative overflow-hidden">
+              <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+                <div className="absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full blur-[120px]" style={{ background: "rgba(21,101,192,0.13)" }} />
+                <div className="absolute top-0 right-0 w-[550px] h-[550px] rounded-full blur-[100px]" style={{ background: "rgba(21,101,192,0.10)" }} />
+                <div className="absolute bottom-0 left-1/3 w-[500px] h-[500px] rounded-full blur-[90px]" style={{ background: "rgba(240,144,32,0.08)" }} />
+              </div>
+              <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-10 sm:pt-16 sm:pb-12 lg:pt-24 lg:pb-16">
+                <div className="lg:grid lg:grid-cols-[1fr_460px] lg:gap-0 lg:items-start">
+                  <div>
+                    {/* Eyebrow */}
+                    <div className={`inline-flex rounded-full h-8 mb-8 ${sk}`} style={{ ...sb(248), backgroundColor: "rgba(240,144,32,0.22)" }} />
+                    {/* Headline — 4 lines matching real */}
+                    <div className="space-y-2.5">
+                      <div className={`h-12 sm:h-14 md:h-16 xl:h-[68px] rounded-md ${sk}`} style={sb(220)} />
+                      <div className={`h-12 sm:h-14 md:h-16 xl:h-[68px] rounded-md ${sk}`} style={sb(360)} />
+                      <div className={`h-12 sm:h-14 md:h-16 xl:h-[68px] rounded-md ${sk}`} style={sb(420)} />
+                    </div>
+                    {/* Subtitle — mt-7, max-w-lg, 2 lines */}
+                    <div className="mt-7 space-y-2 max-w-lg">
+                      <div className={`h-4 w-full rounded ${sk}`} />
+                      <div className={`h-4 w-4/5 rounded ${sk}`} />
+                      <div className={`h-4 w-3/5 rounded ${sk}`} />
+                    </div>
+                    {/* CTAs — mt-10 */}
+                    <div className="mt-10 flex flex-wrap gap-3">
+                      <div className={`h-11 rounded-lg ${sk}`} style={{ ...sb(168), backgroundColor: "rgba(240,144,32,0.3)" }} />
+                      <div className={`h-11 rounded-lg ${sk}`} style={{ ...sb(184), backgroundColor: "rgba(21,101,192,0.28)" }} />
+                    </div>
+                    {/* Trust badges — mt-8 */}
+                    <div className="mt-8 flex flex-wrap gap-2">
+                      {[148, 132, 132].map((w, i) => (
+                        <div key={i} className={`h-6 rounded-full border border-border ${sk}`} style={sb(w)} />
+                      ))}
+                    </div>
+                    {/* Featured deal bar — mt-10 */}
+                    <div className="mt-10 rounded-xl border border-accent/25 p-4 sm:p-5" style={{ background: "rgba(240,144,32,0.04)" }}>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <div className={`h-6 rounded-full ${sk}`} style={{ ...sb(104), backgroundColor: "rgba(240,144,32,0.18)" }} />
+                        <div className={`h-4 rounded flex-1 ${sk}`} style={{ minWidth: 200 }} />
+                      </div>
+                      <div className={`mt-1.5 h-3 w-2/3 rounded ${sk}`} />
+                    </div>
+                  </div>
+                  {/* Right column — news banner placeholder, only on lg */}
+                  <div className="hidden lg:flex flex-col gap-4 mt-8 lg:mt-0 lg:pt-36 lg:-ml-16">
+                    <div className={`h-32 rounded-xl border border-border ${sk}`} />
+                  </div>
+                </div>
+                {/* 3-stat strip — mt-10 */}
+                <div className="mt-10 grid grid-cols-1 xs:grid-cols-3 sm:grid-cols-3 gap-3 sm:gap-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className={`rounded-xl h-[72px] ${sk}`} style={{ backgroundColor: "rgba(21,101,192,0.18)" }} />
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* Real SearchFilter — keep it visible, it doesn't need stocks */}
+            <SearchFilter onFilter={handleFilter} />
+
+            {/* TopPicks skeleton — matches real layout (py-10/16, max-w-7xl, heading flex, 4-col grid gap-4) */}
+            <section className="py-10 sm:py-16 border-b border-border">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-end justify-between mb-10">
+                  <div className="space-y-2">
+                    <div className={`h-8 md:h-9 rounded-md ${sk}`} style={sb(360)} />
+                    <div className={`h-4 rounded ${sk}`} style={sb(280)} />
+                  </div>
+                  <div className={`hidden sm:block h-5 rounded ${sk}`} style={sb(112)} />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <article
+                      key={i}
+                      className="rounded-2xl p-4 sm:p-5 border border-border bg-card"
+                    >
+                      {/* Header row — matches StockCard */}
+                      <div className="flex items-start justify-between gap-2 mb-4">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <div className={`w-10 h-10 rounded-xl shrink-0 ${sk}`} />
+                          <div className="min-w-0 flex-1 space-y-1.5">
+                            <div className={`h-4 w-4/5 rounded ${sk}`} />
+                            <div className={`h-3 w-1/2 rounded ${sk}`} />
+                          </div>
+                        </div>
+                        <div className={`h-5 rounded-full shrink-0 ${sk}`} style={{ ...sb(56), backgroundColor: "rgba(21,101,192,0.12)" }} />
+                      </div>
+                      {/* Price block — mb-4 */}
+                      <div className="mb-4">
+                        <div className={`h-8 rounded-md ${sk}`} style={sb(132)} />
+                        <div className={`mt-1.5 h-6 rounded-full ${sk}`} style={{ ...sb(120), backgroundColor: "rgba(16,185,129,0.14)" }} />
+                      </div>
+                      {/* 52W grid — mb-4 */}
+                      <div className="grid grid-cols-2 gap-2 mb-4">
+                        {[0, 1].map((j) => (
+                          <div key={j} className="bg-surface/70 border border-border rounded-xl p-2.5 space-y-1">
+                            <div className={`h-2.5 mx-auto rounded ${sk}`} style={sb(40)} />
+                            <div className={`h-4 mx-auto rounded ${sk}`} style={sb(56)} />
+                          </div>
+                        ))}
+                      </div>
+                      {/* Sector pill — mb-3 */}
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className={`h-6 rounded-full border border-border ${sk}`} style={sb(88)} />
+                      </div>
+                      {/* Action buttons */}
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className={`h-10 rounded-xl border border-emerald-200 ${sk}`} style={{ backgroundColor: "rgba(16,185,129,0.10)" }} />
+                        <div className={`h-10 rounded-xl border border-red-200 ${sk}`} style={{ backgroundColor: "rgba(239,68,68,0.10)" }} />
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            </section>
+          </>
+        ) : (
+          <>
+            {selectedStock && <Hero stock={selectedStock} />}
+            <SearchFilter onFilter={handleFilter} />
+            <TopPicks
+              allStocks={stocks}
+              onSelectStock={setSelectedStock}
+              selectedStockId={selectedStock?.id ?? ""}
+              query={query}
+              filterTab={filterTab}
+            />
+            <Merits />
+            <AboutUs />
+            <Community />
+          </>
+        )}
       </main>
       <Footer />
     </>
