@@ -24,19 +24,28 @@ export default function CompanyModal({ stock, onClose }: Props) {
   const isPositive = stock.changePct >= 0;
 
   useEffect(() => {
+    const cachedFunds = stock.fundamentalsJson && Object.keys(stock.fundamentalsJson).length > 0;
+
+    // If fundamentals are already stored in DB, use them instantly — no scraping needed
+    if (cachedFunds && stock.description) {
+      setAbout(stock.description);
+      setFunds(stock.fundamentalsJson);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
-    const manualFunds = stock.fundamentalsJson && Object.keys(stock.fundamentalsJson).length > 0;
     const params = new URLSearchParams({ name: stock.fullName });
     if (stock.fundamentalsUrl) params.set('fundamentalsUrl', stock.fundamentalsUrl);
     fetch(`/api/company-info?${params}`)
       .then(r => r.json())
       .then(d => {
         setAbout(d.about || stock.description || "");
-        setFunds(manualFunds ? stock.fundamentalsJson : (d.fundamentals || {}));
+        setFunds(cachedFunds ? stock.fundamentalsJson : (d.fundamentals || {}));
       })
       .catch(() => {
         setAbout(stock.description || "");
-        if (manualFunds) setFunds(stock.fundamentalsJson);
+        if (cachedFunds) setFunds(stock.fundamentalsJson);
       })
       .finally(() => setLoading(false));
   }, [stock.fullName, stock.description, stock.fundamentalsUrl, stock.fundamentalsJson]);
