@@ -14,7 +14,7 @@ build/
 
 # Django
 *.sqlite3
-media/
+media/docs/
 staticfiles/
 
 # Node
