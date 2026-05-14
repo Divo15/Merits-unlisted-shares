@@ -1,5 +1,6 @@
 "use client";
 import { useState, useCallback, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/navbar";
 import Hero from "@/components/hero";
 import SearchFilter from "@/components/search-filter";
@@ -53,8 +54,15 @@ export default function Home() {
       <style>{`@keyframes shimmer { 100% { transform: translateX(100%); } }`}</style>
       <Navbar query={query} onSearch={handleNavSearch} stocks={stocks} />
       <main>
+        <AnimatePresence mode="wait">
         {loading ? (
-          <>
+          <motion.div
+            key="skeleton"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          >
             {/* Hero skeleton — matches real Hero layout (pt-10/16/24, max-w-7xl, 2-col grid on lg) */}
             <section className="relative overflow-hidden">
               <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -67,11 +75,11 @@ export default function Home() {
                   <div>
                     {/* Eyebrow */}
                     <div className={`inline-flex rounded-full h-8 mb-8 ${sk}`} style={{ ...sb(248), backgroundColor: "rgba(240,144,32,0.22)" }} />
-                    {/* Headline — 4 lines matching real */}
-                    <div className="space-y-2.5">
-                      <div className={`h-12 sm:h-14 md:h-16 xl:h-[68px] rounded-md ${sk}`} style={sb(220)} />
-                      <div className={`h-12 sm:h-14 md:h-16 xl:h-[68px] rounded-md ${sk}`} style={sb(360)} />
-                      <div className={`h-12 sm:h-14 md:h-16 xl:h-[68px] rounded-md ${sk}`} style={sb(420)} />
+                    {/* Headline — matches real h1 line-height 0.95 exactly */}
+                    <div className="space-y-1">
+                      <div className={`h-9 sm:h-11 md:h-[57px] xl:h-[65px] rounded-md ${sk}`} style={sb(200)} />
+                      <div className={`h-9 sm:h-11 md:h-[57px] xl:h-[65px] rounded-md ${sk}`} style={sb(300)} />
+                      <div className={`h-9 sm:h-11 md:h-[57px] xl:h-[65px] rounded-md ${sk}`} style={sb(420)} />
                     </div>
                     {/* Subtitle — mt-7, max-w-lg, 2 lines */}
                     <div className="mt-7 space-y-2 max-w-lg">
@@ -171,9 +179,14 @@ export default function Home() {
                 </div>
               </div>
             </section>
-          </>
+          </motion.div>
         ) : (
-          <>
+          <motion.div
+            key="content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
             {selectedStock && <Hero stock={selectedStock} />}
             <SearchFilter onFilter={handleFilter} />
             <TopPicks
@@ -186,8 +199,9 @@ export default function Home() {
             <Merits />
             <AboutUs />
             <Community />
-          </>
+          </motion.div>
         )}
+        </AnimatePresence>
       </main>
       <Footer />
     </>
