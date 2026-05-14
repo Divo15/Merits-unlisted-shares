@@ -205,6 +205,15 @@ async function fetchPlanify(name: string): Promise<Record<string, string>> {
   }
 }
 
+// Transform old unlistedzone URLs (JS SPA) to new server-rendered /shares/ format
+// Old: https://www.unlistedzone.com/{slug}
+// New: https://unlistedzone.com/shares/{slug}/
+function normalizeUnlistedZoneUrl(url: string): string {
+  const m = url.match(/^https?:\/\/(?:www\.)?unlistedzone\.com\/(?!shares\/)([^/?#]+)\/?$/);
+  if (m) return `https://unlistedzone.com/shares/${m[1]}/`;
+  return url;
+}
+
 // ── Unlistedzone fundamentals scrape ─────────────────────────────────────
 // Key labels to extract and their display names in the modal
 const FUND_LABEL_MAP: Record<string, string> = {
@@ -304,7 +313,11 @@ export async function GET(req: NextRequest) {
       return a;
     })(),
     (async () => {
-      if (fundamentalsUrl) return fetchFundamentals(fundamentalsUrl);
+      if (fundamentalsUrl) {
+        const stored = await fetchFundamentals(normalizeUnlistedZoneUrl(fundamentalsUrl));
+        if (Object.keys(stored).length > 0) return stored;
+        // stored URL returned nothing — fall through to auto-detection
+      }
       // Try unlistedzone (most complete data)
       const f1 = await fetchFundamentals(autoUrl1);
       if (Object.keys(f1).length > 0) return f1;
