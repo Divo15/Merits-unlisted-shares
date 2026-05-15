@@ -1,6 +1,33 @@
 "use client";
 import { motion } from "framer-motion";
-import { ShieldCheck, Award, TrendingUp, Globe } from "lucide-react";
+import { ShieldCheck, Award, TrendingUp, Globe, AlertTriangle } from "lucide-react";
+
+const DISCLOSURES = [
+  {
+    title: "Not a SEBI-Recognised Exchange",
+    body: "Unlisted Merits (operated by Merits Capital Market Services Pvt. Ltd.) is NOT a stock exchange or a trading platform recognised by SEBI. We function as an informational platform connecting buyers and sellers of unlisted shares.",
+  },
+  {
+    title: "Not SEBI-Registered",
+    body: "Unlisted Merits is not a SEBI-registered investment advisor, stock broker, portfolio manager, or wealth manager. Nothing on this platform should be construed as advice from a SEBI-registered entity.",
+  },
+  {
+    title: "For Informational Purposes Only",
+    body: "All materials — articles, company analysis, share prices, valuations, and IPO predictions — are for informational and educational purposes only. They do not constitute financial, legal, or tax advice of any kind.",
+  },
+  {
+    title: "Investment Risks — Read Carefully",
+    body: "Investing in unlisted shares carries significant risks including potential total loss of capital, liquidity challenges, price volatility, valuation uncertainty, fraud exposure, and no IPO guarantee. Be prepared to lose your entire investment.",
+  },
+  {
+    title: "No Guarantee or Warranty",
+    body: "All information is provided 'AS IS' without warranty of any kind. Unlisted Merits provides no guarantees regarding share price accuracy, availability, investment returns, IPO timing, or transaction completion.",
+  },
+  {
+    title: "Past Performance",
+    body: "Previous returns, price appreciation, and IPO successes highlighted on this platform do not indicate or guarantee future performance. Historical data is illustrative only.",
+  },
+];
 
 const HIGHLIGHTS = [
   { icon: ShieldCheck, label: "SEBI Registered",        sub: "Regulated Intermediary"             },
@@ -186,6 +213,61 @@ export default function AboutUs() {
           </motion.div>
 
         </div>
+
+        {/* ── Risk Disclosure & Disclaimer ── */}
+        <motion.div
+          id="disclaimer"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className="scroll-mt-24 mt-16 sm:mt-20 pt-12 border-t"
+          style={{ borderColor: "rgba(255,255,255,0.10)" }}
+        >
+          <motion.div variants={itemVariants}>
+            <div
+              className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-5"
+              style={{ background: "rgba(240,144,32,0.18)", border: "1px solid rgba(240,144,32,0.35)" }}
+            >
+              <AlertTriangle className="w-3.5 h-3.5" style={{ color: "#F09020" }} aria-hidden="true" />
+              <span className="text-xs font-bold tracking-[0.12em] text-orange-300 uppercase">Investor Awareness</span>
+            </div>
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-3">
+              Risk Disclosure &amp; Disclaimer
+            </h3>
+            <p className="text-[0.95rem] leading-[1.7] max-w-2xl mb-8" style={{ color: "rgba(255,255,255,0.6)" }}>
+              Unlisted shares are high-risk instruments. Please read these key disclosures carefully before making any investment decision.
+            </p>
+          </motion.div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {DISCLOSURES.map(({ title, body }) => (
+              <motion.div
+                key={title}
+                variants={itemVariants}
+                className="rounded-2xl p-5 transition-all duration-300 hover:-translate-y-1"
+                style={{
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.10)",
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(240,144,32,0.35)"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.10)"; }}
+              >
+                <div className="flex items-center gap-3 mb-2.5">
+                  <div
+                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                    style={{ background: "rgba(240,144,32,0.18)", border: "1px solid rgba(240,144,32,0.3)" }}
+                  >
+                    <AlertTriangle className="w-4 h-4" style={{ color: "#F09020" }} aria-hidden="true" />
+                  </div>
+                  <h4 className="text-sm font-bold text-white leading-snug">{title}</h4>
+                </div>
+                <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>{body}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );

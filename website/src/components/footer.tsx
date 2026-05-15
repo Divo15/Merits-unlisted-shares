@@ -10,17 +10,12 @@ const LINKS: Record<string, { label: string; href: string }[]> = {
   ],
   Company: [
     { label: "About Us", href: "/#about-us" },
-    { label: "Blog", href: "#" },
-    { label: "Careers", href: "#" },
   ],
   Support: [
-    { label: "Help Center", href: "#" },
     { label: "Contact Us", href: "/#contact" },
   ],
   Legal: [
-    { label: "Terms of Service", href: "#" },
-    { label: "Disclaimer", href: "#" },
-    { label: "Risk Disclosure", href: "#" },
+    { label: "Disclaimer", href: "/#disclaimer" },
   ],
 };
 
@@ -60,13 +55,13 @@ export default function Footer() {
             <Link
               href="/"
               className="flex items-center gap-2.5 mb-5"
-              aria-label="Meritspe home"
+              aria-label="Unlisted Merits home"
             >
               <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #1E88E5 0%, #1565C0 100%)", boxShadow: "0 2px 10px rgba(21,101,192,0.28)" }}>
                 <TrendingUp className="w-4 h-4 text-white" aria-hidden="true" />
               </div>
               <span className="text-base font-bold text-foreground">
-                Merits<span className="text-primary">PE</span>
+                Unlisted <span className="text-primary">Merits</span>
               </span>
             </Link>
 
@@ -76,18 +71,18 @@ export default function Footer() {
 
             <div className="space-y-2.5 text-sm mb-6">
               <a
-                href="mailto:Unlisted@merits.in"
+                href="mailto:unlisted@merits.in"
                 className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded"
               >
                 <Mail className="w-4 h-4 shrink-0" aria-hidden="true" />
-                Unlisted@merits.in
+                unlisted@merits.in
               </a>
               <a
-                href="tel:+919818829442"
+                href="tel:+919871325544"
                 className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded"
               >
                 <Phone className="w-4 h-4 shrink-0" aria-hidden="true" />
-                +91 98188 29442
+                +91 98713 25544
               </a>
             </div>
 
@@ -99,7 +94,7 @@ export default function Footer() {
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={`Meritspe on ${label}`}
+                  aria-label={`Unlisted Merits on ${label}`}
                   className="w-8 h-8 rounded-lg bg-surface border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-surface-2 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
                 >
                   <Icon className="w-4 h-4" />
@@ -139,13 +134,13 @@ export default function Footer() {
         <div className="border-t border-border pt-8">
           <div className="bg-surface/50 border border-border rounded-xl p-4 mb-6 text-xs text-muted-foreground leading-relaxed">
             <strong className="text-foreground/60">Disclaimer:</strong>{" "}
-            Meritspe is not a registered broker or SEBI-registered entity. Investments in unlisted
+            Unlisted Merits is not a registered broker or SEBI-registered entity. Investments in unlisted
             shares are subject to market risks. Please read all risk disclosures carefully. Past
             performance is not indicative of future returns. This website does not constitute
             investment advice.
           </div>
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-            <p>© 2026 Meritspe. All rights reserved.</p>
+            <p>© 2026 Unlisted Merits. All rights reserved.</p>
             <p>Built for India&apos;s next generation of investors.</p>
           </div>
         </div>

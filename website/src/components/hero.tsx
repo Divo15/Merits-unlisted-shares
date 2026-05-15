@@ -113,7 +113,11 @@ export default function Hero({ stock }: HeroProps) {
                   Explore Deals <ArrowRight className="w-4 h-4" aria-hidden="true" />
                 </a>
                 <a
-                  href="#founders"
+                  href="#contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+                  }}
                   className="btn-shine inline-flex items-center justify-center font-semibold text-sm px-7 py-3 rounded-lg transition-all duration-200 hover:-translate-y-1 hover:scale-[1.02] active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
                   style={{ background: "linear-gradient(135deg, #1E88E5 0%, #1565C0 100%)", color: "#ffffff", boxShadow: "0 4px 18px rgba(21,101,192,0.30)" }}
                 >
