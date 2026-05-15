@@ -8,7 +8,6 @@ import TopPicks from "@/components/top-picks";
 import Merits from "@/components/merits";
 import AboutUs from "@/components/about-us";
 import Community from "@/components/community";
-import RiskDisclosure from "@/components/risk-disclosure";
 import Footer from "@/components/footer";
 import type { Stock } from "@/types/stock";
 
@@ -199,7 +198,6 @@ export default function Home() {
             />
             <Merits />
             <AboutUs />
-            <RiskDisclosure />
             <Community />
           </motion.div>
         )}

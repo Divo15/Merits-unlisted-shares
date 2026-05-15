@@ -15,8 +15,7 @@ const LINKS: Record<string, { label: string; href: string }[]> = {
     { label: "Contact Us", href: "/#contact" },
   ],
   Legal: [
-    { label: "Disclaimer", href: "/disclaimer" },
-    { label: "Risk Disclosure", href: "/disclaimer" },
+    { label: "Disclaimer", href: "/#disclaimer" },
   ],
 };
 
